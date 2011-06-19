@@ -4,19 +4,23 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<EditText
+<uk.co.deftelf.writefocus.WfEditText
 	android:id="@+id/text"  
-    android:layout_width="fill_parent" 
+    android:layout_width="wrap_content" 
     android:layout_height="fill_parent" 
     android:text="@string/hello"
     android:inputType="textMultiLine"
     android:scrollbars="vertical"
+    android:layout_gravity="center_horizontal"
+    android:gravity="left|top"
     />
 <TextView
-	android:layout_width="fill_parent" 
-    android:layout_height="fill_parent" 
+	android:id="@+id/helphints"
+	android:layout_width="wrap_content" 
+    android:layout_height="wrap_content" 
     android:text="one\ntwo\nthree"
     android:inputType="textMultiLine"
     android:visibility="gone"
+    android:layout_gravity="right"
     />
 </FrameLayout>
