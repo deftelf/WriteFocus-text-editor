@@ -62,7 +62,11 @@ public class WfEditText extends EditText {
         } else if (keyCode == KeyEvent.KEYCODE_X) {
             cut();
             return true;
+        } else if (keyCode == KeyEvent.KEYCODE_Z) {
+            parent.undo();
+            return true;
         }
+        
         return super.onKeyShortcut(keyCode, event);
     }
     

@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Stack;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
@@ -31,11 +33,29 @@ import android.widget.Toast;
 public class Main extends Activity {
     
     private static final String MEASURE_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce massa nunc. mmmmmm";
+    private static final int STACK_MAX_SIZE = 20;
     
-    WfEditText text;
-    TextView helpHints;
-    Toast statsToast;
-    Handler helpHintHide;
+    private WfEditText text;
+    private TextView helpHints;
+    private Toast statsToast;
+    private Handler helpHintHide;
+    private ArrayDeque<Undo> undoHistory = new ArrayDeque<Undo>();
+    private boolean undoing = false;
+    
+    
+    private class Undo {
+        int start;
+        int after;
+        CharSequence oldText;
+        public Undo(int start, int after, CharSequence oldText) {
+            super();
+            this.start = start;
+            this.after = after;
+            this.oldText = oldText;
+        }
+        
+        
+    }
     
     /** Called when the activity is first created. */
     @Override
@@ -58,7 +78,7 @@ public class Main extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        text.setText(testText);
+        //text.setText(testText);
         text.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
         
         try {
@@ -75,19 +95,31 @@ public class Main extends Activity {
         text.addTextChangedListener(new TextWatcher() {
             
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                Log.d("Text", s.length() + "");
+                
             }
             
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                Log.d("Text", s.length() + "");
-                
+                if (!undoing) {
+                    CharSequence old = s.subSequence(start, start + count);
+                    undoHistory.push(new Undo(start, start + after, old));
+                    if (undoHistory.size() > STACK_MAX_SIZE)
+                        undoHistory.removeLast();
+                }
             }
             
             public void afterTextChanged(Editable s) {
-                // TODO Auto-generated method stub
                 
             }
         });
+    }
+    
+    public void undo() {
+        if (undoHistory.isEmpty())
+            return;
+        undoing = true;
+        Undo undo = undoHistory.pop();
+        text.getText().replace(undo.start, undo.after, undo.oldText);
+        undoing = false;
     }
     
     public int wordCount() {
