@@ -17,12 +17,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.EditText;
+import android.widget.Scroller;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,7 +58,7 @@ public class Main extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        //text.setText(testText);
+        text.setText(testText);
         text.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
         
         try {
@@ -66,11 +68,26 @@ public class Main extends Activity {
         } catch (RuntimeException ex) {
         }
         
+        text.setScroller(new Scroller(this, null, true));
         text.getLayoutParams().width = (int)Math.ceil(text.getPaint().measureText(MEASURE_TEXT));
         statsToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         
-        Log.i("wc", wordCount() + "");
-        Log.i("lc", lineCount() + "");
+        text.addTextChangedListener(new TextWatcher() {
+            
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d("Text", s.length() + "");
+            }
+            
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                Log.d("Text", s.length() + "");
+                
+            }
+            
+            public void afterTextChanged(Editable s) {
+                // TODO Auto-generated method stub
+                
+            }
+        });
     }
     
     public int wordCount() {
