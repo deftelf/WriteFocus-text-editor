@@ -43,7 +43,7 @@ public class Main extends Activity {
         
         text = (WfEditText) findViewById(R.id.text);
         helpHints = (TextView) findViewById(R.id.helphints);
-        text.parent = this;
+        text.init(this);
         
         StringBuilder testText = new StringBuilder();
         try {
