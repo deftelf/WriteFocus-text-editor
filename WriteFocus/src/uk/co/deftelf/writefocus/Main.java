@@ -13,6 +13,7 @@ import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.res.AssetManager;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
 import android.text.TextWatcher;
+import android.text.style.BackgroundColorSpan;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -46,7 +48,7 @@ public class Main extends Activity {
     private ArrayDeque<Undo> undoHistory = new ArrayDeque<Undo>();
     private boolean undoing = false;
     private Toast notFound;
-    
+    private Object findHighlightSpan;
     
     private class Undo {
         int start;
@@ -147,16 +149,17 @@ public class Main extends Activity {
     }
     
     public int lineCount() {
-        int lc = 1;
-        Editable ed = text.getText();
-        for (int i=0; i < ed.length(); i++) {
-            char ch = ed.charAt(i);
-            if (ch == '\n')
-                lc++;
-        }
-        return lc;
+//        int lc = 1;
+//        Editable ed = text.getText();
+//        for (int i=0; i < ed.length(); i++) {
+//            char ch = ed.charAt(i);
+//            if (ch == '\n')
+//                lc++;
+//        }
+//        return lc;
+//        
         
-        
+        return text.getLineCount();
     }
 
     public int search(String search) {
@@ -192,17 +195,28 @@ public class Main extends Activity {
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             
             public boolean onQueryTextSubmit(String arg0) {
-                
+                if (findHighlightSpan != null)
+                    text.getText().removeSpan(findHighlightSpan);
+                text.requestFocus();
                 return false;
             }
             
             public boolean onQueryTextChange(String arg0) {
+                if (findHighlightSpan != null)
+                    text.getText().removeSpan(findHighlightSpan);
+                
+                if (arg0.length() == 0)
+                    return false;
+                
                 int loc = search(arg0);
                 Log.d("search", loc + "");
                 if (loc == -1)
                     notFound.show();
-                else 
+                else {
+                    findHighlightSpan = new BackgroundColorSpan(Color.RED);
+                    text.getText().setSpan(findHighlightSpan, loc, loc + arg0.length(), 0);
                     text.setSelection(loc);
+                }
                 return false;
             }
         });

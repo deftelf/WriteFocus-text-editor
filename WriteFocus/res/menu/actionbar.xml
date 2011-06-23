@@ -2,9 +2,10 @@
 <menu
   xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/menu_search"
-        android:title="Search"
+        android:title="Find"
         android:icon="@android:drawable/ic_menu_search"
-        android:showAsAction="always"
+        android:showAsAction="always" 
+        android:alphabeticShortcut="F"
         android:actionViewClass="android.widget.SearchView"
          />
 </menu>
