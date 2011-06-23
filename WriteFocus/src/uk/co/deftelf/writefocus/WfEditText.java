@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -47,6 +48,13 @@ public class WfEditText extends EditText {
         return super.onKeyDown(keyCode, event);
     }
     
+    @Override
+    protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect);
+        if (focused) {
+            //TODO: remove highlights
+        }
+    }
     
     @Override
     public boolean onKeyShortcut(int keyCode, KeyEvent event) {

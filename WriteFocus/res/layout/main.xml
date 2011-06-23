@@ -19,6 +19,7 @@
 	android:layout_width="wrap_content" 
     android:layout_height="wrap_content" 
     android:text="one\ntwo\nthree"
+    android:background="#88000000"
     android:inputType="textMultiLine"
     android:visibility="gone"
     android:layout_gravity="right"

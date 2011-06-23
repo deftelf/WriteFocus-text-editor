@@ -49,6 +49,7 @@ public class Main extends Activity {
     private boolean undoing = false;
     private Toast notFound;
     private Object findHighlightSpan;
+    private boolean hasChanged = false;
     
     private class Undo {
         int start;
@@ -108,6 +109,7 @@ public class Main extends Activity {
             
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if (!undoing) {
+                    hasChanged = true;
                     CharSequence old = s.subSequence(start, start + count);
                     undoHistory.push(new Undo(start, start + after, old));
                     if (undoHistory.size() > STACK_MAX_SIZE)
@@ -262,24 +264,15 @@ public class Main extends Activity {
                 anim.addListener(new Animator.AnimatorListener() {
                     
                     
-                    public void onAnimationStart(Animator arg0) {
-                        // TODO Auto-generated method stub
-                        
-                    }
+                    public void onAnimationStart(Animator arg0) {}
                     
-                    public void onAnimationRepeat(Animator arg0) {
-                        // TODO Auto-generated method stub
-                        
-                    }
+                    public void onAnimationRepeat(Animator arg0) {}
                     
                     public void onAnimationEnd(Animator arg0) {
                         helpHints.setVisibility(View.GONE);
                     }
                     
-                    public void onAnimationCancel(Animator arg0) {
-                        // TODO Auto-generated method stub
-                        
-                    }
+                    public void onAnimationCancel(Animator arg0) {}
                 });
                 anim.start();
                 return true;
