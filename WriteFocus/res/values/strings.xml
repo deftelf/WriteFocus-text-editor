@@ -4,4 +4,6 @@
     <string name="app_name">WriteFocus</string>
     <string name="not_found">Not found</string>
     <string name="undo_history_cleared">Undo history cleared to save memory.</string>
+    <string name="text_saved">Text saved</string>
+    <string name="failed_to_save_text">Failed to save text</string>
 </resources>

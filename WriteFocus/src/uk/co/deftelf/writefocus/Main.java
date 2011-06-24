@@ -3,6 +3,7 @@ package uk.co.deftelf.writefocus;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,6 +13,7 @@ import java.util.Stack;
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -40,7 +42,8 @@ import android.widget.Toast;
 public class Main extends Activity {
     
     private static final String MEASURE_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce massa nunc. mmmmmm";
-    
+    String FILENAME = "data.txt";
+
     private WfEditText text;
     private TextView helpHints;
     private Toast statsToast;
@@ -61,7 +64,8 @@ public class Main extends Activity {
         notFound = Toast.makeText(this, R.string.not_found, Toast.LENGTH_SHORT);
         StringBuilder testText = new StringBuilder();
         try {
-            InputStream fs = getAssets().open("pg2600.txt");
+            //InputStream fs = getAssets().open("pg2600.txt");
+            InputStream fs = openFileInput(FILENAME);
             BufferedReader br = new BufferedReader(new InputStreamReader(fs));
             String line;
             while ((line = br.readLine()) != null)
@@ -70,7 +74,7 @@ public class Main extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        //text.setText(testText);
+        text.setText(testText);
         text.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
         
         try {
@@ -86,7 +90,22 @@ public class Main extends Activity {
         text.suppressUndo = false;
     }
     
-    
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (text.hasChanged) {
+            try {
+                FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                for (int i=0; i < text.getText().length(); i++)
+                    fos.write(text.getText().charAt(i));
+                fos.close();
+                text.hasChanged = false;
+                Toast.makeText(this, R.string.text_saved, Toast.LENGTH_SHORT).show();
+            } catch (IOException ex) {
+                Toast.makeText(this, R.string.failed_to_save_text, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

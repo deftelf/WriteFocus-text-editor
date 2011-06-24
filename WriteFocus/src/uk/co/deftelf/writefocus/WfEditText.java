@@ -30,8 +30,8 @@ public class WfEditText extends EditText {
     private ClipboardManager clipBoard;
     
     boolean suppressUndo;
-    private boolean hasChanged = false;
-    private SoftReference<ArrayDeque<Undo>> undoHistory = new SoftReference<ArrayDeque<Undo>>(new ArrayDeque<Undo>());
+    boolean hasChanged = false;
+    private SoftReference<ArrayDeque<Undo>> undoHistory;
 
     private Object findHighlightSpan;
     
@@ -63,7 +63,7 @@ public class WfEditText extends EditText {
     public void init(Main parent) {
         this.parent = parent;
         clipBoard = (ClipboardManager) parent.getSystemService(Activity.CLIPBOARD_SERVICE);
-        
+        suppressUndo = true;
         addTextChangedListener(new TextWatcher() {
             
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -72,9 +72,10 @@ public class WfEditText extends EditText {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 if (undoHistory == null)
                     suppressUndo = true;
+
+                hasChanged = true;
                 
                 if (!suppressUndo) {
-                    hasChanged = true;
                     CharSequence old = s.subSequence(start, start + count);
                     
                     ArrayDeque<Undo> undoHistoryActual = undoHistory.get();
@@ -93,6 +94,8 @@ public class WfEditText extends EditText {
             public void afterTextChanged(Editable s) {
             }
         });
+        
+        undoHistory = new SoftReference<ArrayDeque<Undo>>(new ArrayDeque<Undo>());
     }
 
     public void undo() {
