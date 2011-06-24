@@ -2,4 +2,5 @@
 <resources>
     <string name="hello">Hello World, Main!</string>
     <string name="app_name">WriteFocus</string>
+    <string name="not_found">Not found</string>
 </resources>

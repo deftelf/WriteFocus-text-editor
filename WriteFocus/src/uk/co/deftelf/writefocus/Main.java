@@ -39,31 +39,14 @@ import android.widget.Toast;
 public class Main extends Activity {
     
     private static final String MEASURE_TEXT = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce massa nunc. mmmmmm";
-    private static final int STACK_MAX_SIZE = 20;
     
     private WfEditText text;
     private TextView helpHints;
     private Toast statsToast;
     private Handler helpHintHide;
-    private ArrayDeque<Undo> undoHistory = new ArrayDeque<Undo>();
-    private boolean undoing = false;
     private Toast notFound;
     private Object findHighlightSpan;
-    private boolean hasChanged = false;
     
-    private class Undo {
-        int start;
-        int after;
-        CharSequence oldText;
-        public Undo(int start, int after, CharSequence oldText) {
-            super();
-            this.start = start;
-            this.after = after;
-            this.oldText = oldText;
-        }
-        
-        
-    }
     
     /** Called when the activity is first created. */
     @Override
@@ -75,7 +58,7 @@ public class Main extends Activity {
         helpHints = (TextView) findViewById(R.id.helphints);
         text.init(this);
         
-        notFound = Toast.makeText(this, "Not found", Toast.LENGTH_SHORT);
+        notFound = Toast.makeText(this, R.string.not_found, Toast.LENGTH_SHORT);
         StringBuilder testText = new StringBuilder();
         try {
             InputStream fs = getAssets().open("pg2600.txt");
@@ -100,70 +83,10 @@ public class Main extends Activity {
         text.setScroller(new Scroller(this, null, true));
         text.getLayoutParams().width = (int)Math.ceil(text.getPaint().measureText(MEASURE_TEXT));
         statsToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
-        
-        text.addTextChangedListener(new TextWatcher() {
-            
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                
-            }
-            
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                if (!undoing) {
-                    hasChanged = true;
-                    CharSequence old = s.subSequence(start, start + count);
-                    undoHistory.push(new Undo(start, start + after, old));
-                    if (undoHistory.size() > STACK_MAX_SIZE)
-                        undoHistory.removeLast();
-                }
-            }
-            
-            public void afterTextChanged(Editable s) {
-                
-            }
-        });
+        text.suppressUndo = false;
     }
     
-    public void undo() {
-        if (undoHistory.isEmpty())
-            return;
-        undoing = true;
-        Undo undo = undoHistory.pop();
-        text.getText().replace(undo.start, undo.after, undo.oldText);
-        undoing = false;
-    }
     
-    public int wordCount() {
-        int wc = 0;
-        Editable ed = text.getText();
-        boolean word = false;
-        for (int i=0; i < ed.length(); i++) {
-            char ch = ed.charAt(i);
-            if (word &&
-                    Character.isWhitespace(ch)) {
-                word = false;
-            } else if (!word && 
-                    !Character.isWhitespace(ch)) {
-                word = true;
-                wc++;
-            }
-        }
-        return wc;
-    }
-    
-    public int lineCount() {
-//        int lc = 1;
-//        Editable ed = text.getText();
-//        for (int i=0; i < ed.length(); i++) {
-//            char ch = ed.charAt(i);
-//            if (ch == '\n')
-//                lc++;
-//        }
-//        return lc;
-//        
-        
-        return text.getLineCount();
-    }
-
     public int search(String search) {
         if (search.length() == 0)
             return -1;
@@ -226,7 +149,7 @@ public class Main extends Activity {
     }
     
     public void showStats() {
-        statsToast.setText("Lines: " + lineCount() + "\nWords: " + wordCount() + "\nCharacters: " + text.getText().length());
+        statsToast.setText("Lines: " + text.getLineCount() + "\nWords: " + text.getWordCount() + "\nCharacters: " + text.getText().length());
         statsToast.show();
     }
 
