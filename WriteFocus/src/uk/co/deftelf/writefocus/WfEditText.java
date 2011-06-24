@@ -1,6 +1,8 @@
 package uk.co.deftelf.writefocus;
 
 
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 
 import android.app.Activity;
@@ -16,6 +18,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class WfEditText extends EditText {
     
@@ -27,7 +30,7 @@ public class WfEditText extends EditText {
     
     boolean suppressUndo;
     private boolean hasChanged = false;
-    private ArrayDeque<Undo> undoHistory = new ArrayDeque<Undo>();
+    private SoftReference<ArrayDeque<Undo>> undoHistory = new SoftReference<ArrayDeque<Undo>>(new ArrayDeque<Undo>());
 
     private Object findHighlightSpan;
     
@@ -62,10 +65,16 @@ public class WfEditText extends EditText {
     }
 
     public void undo() {
-        if (undoHistory.isEmpty())
+        ArrayDeque<Undo> undoHistoryActual = undoHistory.get();
+        if (undoHistoryActual == null) {
+            undoHistoryActual = new ArrayDeque<Undo>();
+            undoHistory = new SoftReference<ArrayDeque<Undo>>(undoHistoryActual);
+            Toast.makeText(getContext(), R.string.undo_history_cleared, Toast.LENGTH_LONG).show();
+        }
+        if (undoHistoryActual.isEmpty())
             return;
         suppressUndo = true;
-        Undo undo = undoHistory.pop();
+        Undo undo = undoHistoryActual.pop();
         getText().replace(undo.start, undo.after, undo.oldText);
         suppressUndo = false;
     }
@@ -128,9 +137,15 @@ public class WfEditText extends EditText {
         if (!suppressUndo) {
             hasChanged = true;
             CharSequence old = text.subSequence(start, before + start);
-            undoHistory.push(new Undo(start, after + start, old));
-            if (undoHistory.size() > STACK_MAX_SIZE)
-                undoHistory.removeLast();
+            ArrayDeque<Undo> undoHistoryActual = undoHistory.get();
+            if (undoHistoryActual == null) {
+                undoHistoryActual = new ArrayDeque<Undo>();
+                undoHistory = new SoftReference<ArrayDeque<Undo>>(undoHistoryActual);
+                Toast.makeText(getContext(), R.string.undo_history_cleared, Toast.LENGTH_LONG).show();
+            }
+            undoHistoryActual.push(new Undo(start, after + start, old));
+            if (undoHistoryActual.size() > STACK_MAX_SIZE)
+                undoHistoryActual.removeLast();
         }
     }
     

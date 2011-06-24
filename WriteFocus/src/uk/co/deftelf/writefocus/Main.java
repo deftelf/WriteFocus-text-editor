@@ -70,7 +70,7 @@ public class Main extends Activity {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        text.setText(testText);
+        //text.setText(testText);
         text.setSystemUiVisibility(View.STATUS_BAR_HIDDEN);
         
         try {
