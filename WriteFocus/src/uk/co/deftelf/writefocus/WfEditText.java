@@ -7,9 +7,11 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -26,6 +28,8 @@ public class WfEditText extends EditText {
     boolean suppressUndo;
     private boolean hasChanged = false;
     private ArrayDeque<Undo> undoHistory = new ArrayDeque<Undo>();
+
+    private Object findHighlightSpan;
     
     private class Undo {
         int start;
@@ -80,8 +84,16 @@ public class WfEditText extends EditText {
     protected void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
         if (focused) {
-            //TODO: remove highlights
+            if (findHighlightSpan != null)
+                getText().removeSpan(findHighlightSpan);
         }
+    }
+    
+    public void findHighlight(int from, int to) {
+        if (findHighlightSpan != null)
+            getText().removeSpan(findHighlightSpan);
+        findHighlightSpan = new BackgroundColorSpan(Color.RED);
+        getText().setSpan(findHighlightSpan, from, to, 0);
     }
     
     @Override
@@ -140,6 +152,32 @@ public class WfEditText extends EditText {
         }
     }
     
+
+    public int search(CharSequence search) {
+        if (search.length() == 0)
+            return -1;
+        CharSequence contents = getText();
+        int cursorAt = 0;//text.getSelectionEnd();
+        boolean found = false;
+        while (!found && cursorAt < contents.length()) {
+            int i = 0;
+            for (; cursorAt < contents.length() && i < search.length(); cursorAt++) {
+                char c = Character.toLowerCase(search.charAt(i));
+                if (cursorAt < contents.length() &&
+                        c == Character.toLowerCase(contents.charAt(cursorAt))) {
+                    i++;
+                    found = true;
+                } else {
+                    found = false;
+                    cursorAt++;
+                    break;
+                }
+            }
+            if (found)
+                return cursorAt - search.length();
+        }
+        return -1;
+    }
 
     public int getWordCount() {
         int wc = 0;
