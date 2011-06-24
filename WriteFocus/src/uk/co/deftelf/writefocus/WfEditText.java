@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.text.Editable;
 import android.text.SpannableString;
+import android.text.TextWatcher;
 import android.text.style.BackgroundColorSpan;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -62,6 +63,36 @@ public class WfEditText extends EditText {
     public void init(Main parent) {
         this.parent = parent;
         clipBoard = (ClipboardManager) parent.getSystemService(Activity.CLIPBOARD_SERVICE);
+        
+        addTextChangedListener(new TextWatcher() {
+            
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+            
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                if (undoHistory == null)
+                    suppressUndo = true;
+                
+                if (!suppressUndo) {
+                    hasChanged = true;
+                    CharSequence old = s.subSequence(start, start + count);
+                    
+                    ArrayDeque<Undo> undoHistoryActual = undoHistory.get();
+                    if (undoHistoryActual == null) {
+                        undoHistoryActual = new ArrayDeque<Undo>();
+                        undoHistory = new SoftReference<ArrayDeque<Undo>>(undoHistoryActual);
+                        Toast.makeText(getContext(), R.string.undo_history_cleared, Toast.LENGTH_LONG).show();
+                    }
+                    undoHistoryActual.push(new Undo(start, start + after, old));
+                    if (undoHistoryActual.size() > STACK_MAX_SIZE)
+                        undoHistoryActual.removeLast();
+                    
+                }
+            }
+            
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     public void undo() {
@@ -127,27 +158,6 @@ public class WfEditText extends EditText {
         return super.onKeyShortcut(keyCode, event);
     }
     
-    @Override
-    protected void onTextChanged(CharSequence text, int start, int before, int after) {
-        super.onTextChanged(text, start, before, after);
-        
-        if (undoHistory == null)
-            suppressUndo = true;
-        
-        if (!suppressUndo) {
-            hasChanged = true;
-            CharSequence old = text.subSequence(start, before + start);
-            ArrayDeque<Undo> undoHistoryActual = undoHistory.get();
-            if (undoHistoryActual == null) {
-                undoHistoryActual = new ArrayDeque<Undo>();
-                undoHistory = new SoftReference<ArrayDeque<Undo>>(undoHistoryActual);
-                Toast.makeText(getContext(), R.string.undo_history_cleared, Toast.LENGTH_LONG).show();
-            }
-            undoHistoryActual.push(new Undo(start, after + start, old));
-            if (undoHistoryActual.size() > STACK_MAX_SIZE)
-                undoHistoryActual.removeLast();
-        }
-    }
     
     public void copy() {
         CharSequence textContent = getText().subSequence(Math.min(getSelectionStart(), getSelectionEnd()), Math.max(getSelectionStart(), getSelectionEnd()));
