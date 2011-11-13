@@ -1,38 +1,24 @@
 package uk.co.deftelf.writefocus;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Stack;
 
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.SpannableStringBuilder;
-import android.text.TextWatcher;
-import android.text.style.BackgroundColorSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.animation.AccelerateInterpolator;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.EditText;
 import android.widget.Scroller;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -49,6 +35,7 @@ public class Main extends Activity {
     private Toast statsToast;
     private Handler helpHintHide;
     private Toast notFound;
+    SearchView searchView;
     
     
     /** Called when the activity is first created. */
@@ -110,11 +97,12 @@ public class Main extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar, menu);
-        final SearchView searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
             
             public boolean onQueryTextSubmit(String arg0) {
                 text.requestFocus();
+                searchView.setIconified(true);
                 return false;
             }
             
@@ -128,6 +116,8 @@ public class Main extends Activity {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus) {
                     search(searchView.getQuery());
+                } else {
+                    searchView.setIconified(true);
                 }
             }
         });

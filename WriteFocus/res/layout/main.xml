@@ -1,27 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
-<uk.co.deftelf.writefocus.WfEditText
-	android:id="@+id/text"  
-    android:layout_width="wrap_content" 
-    android:layout_height="fill_parent" 
-    android:text=""
-    android:inputType="textMultiLine"
-    android:scrollbars="vertical"
-    android:layout_gravity="center_horizontal"
-    android:gravity="left|top"
-    />
-<TextView
-	android:id="@+id/helphints"
-	android:layout_width="wrap_content" 
-    android:layout_height="wrap_content" 
-    android:text="one\ntwo\nthree"
-    android:background="#88000000"
-    android:inputType="textMultiLine"
-    android:visibility="gone"
-    android:layout_gravity="right"
-    />
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <uk.co.deftelf.writefocus.WfEditText
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fadeScrollbars="false"
+            android:gravity="left|top"
+            android:inputType="textMultiLine"
+            android:scrollbars="vertical"
+            android:text="" />
+        
+        <ImageView android:id="@+id/scrollThumb"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon"
+            android:visibility="invisible"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/helphints"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:background="#88000000"
+        android:inputType="textMultiLine"
+        android:text="Ctrl-F - Search\nCtrl-L - Word and line count\nCtrl-X - Cut\nCtrl-C - Copy\nCtrl-V - Paste\nCtrl-Z - Undo"
+        android:visibility="gone" />
+
 </FrameLayout>

@@ -18,6 +18,14 @@
             <meta-data android:name="android.app.searchable"
                    android:resource="@xml/searchable"/>
         </activity>
+        
 
     </application>
+    
+    <supports-screens android:smallScreens="false"
+        android:normalScreens="false"
+        android:largeScreens="false"
+        android:xlargeScreens="true" 
+        android:requiresSmallestWidthDp="600" />
+    
 </manifest>

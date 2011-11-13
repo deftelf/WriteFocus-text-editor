@@ -19,6 +19,8 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class WfEditText extends EditText {
@@ -34,6 +36,8 @@ public class WfEditText extends EditText {
     private SoftReference<ArrayDeque<Undo>> undoHistory;
 
     private Object findHighlightSpan;
+//    private boolean scrollAuto = false;
+    private ImageView scrollThumb;
     
     private class Undo {
         int start;
@@ -62,6 +66,8 @@ public class WfEditText extends EditText {
     
     public void init(Main parent) {
         this.parent = parent;
+
+        scrollThumb = (ImageView) findViewById(R.id.scrollThumb);
         clipBoard = (ClipboardManager) parent.getSystemService(Activity.CLIPBOARD_SERVICE);
         suppressUndo = true;
         addTextChangedListener(new TextWatcher() {
@@ -92,8 +98,18 @@ public class WfEditText extends EditText {
             }
             
             public void afterTextChanged(Editable s) {
+                
+//                if (getLineCount() > (getHeight() / getLineHeight())) {
+//                    scrollThumb.setVisibility(VISIBLE);
+//                    int maxLines = getLineCount() - (getHeight() / getLineHeight());
+//                    int curLine = getScrollY() / getLineHeight();
+//                    ((LinearLayout.LayoutParams)scrollThumb.getLayoutParams()).topMargin = (int) ((((float)curLine) / maxLines) * getHeight());
+//                } else {
+//                    scrollThumb.setVisibility(INVISIBLE);
+//                }
             }
         });
+        
         
         undoHistory = new SoftReference<ArrayDeque<Undo>>(new ArrayDeque<Undo>());
     }
@@ -155,6 +171,10 @@ public class WfEditText extends EditText {
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_Z) {
             undo();
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_F) {
+            parent.searchView.setIconified(false);
+            parent.searchView.requestFocus();
             return true;
         }
         
@@ -224,6 +244,22 @@ public class WfEditText extends EditText {
         }
         return wc;
     }
+    
+    
+    
+//    
+//    @Override
+//    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+//        super.onScrollChanged(l, t, oldl, oldt);
+//        if (t - oldt > 2 &&
+//                !scrollAuto) {
+//            scrollAuto = true;
+//            scrollBy(0, 50);
+//        } else {
+//            scrollAuto = false;
+//        }
+//            
+//    }
     
 
     
