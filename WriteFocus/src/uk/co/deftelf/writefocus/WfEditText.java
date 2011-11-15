@@ -5,6 +5,8 @@ import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.ArrayDeque;
 
+import com.tokaracamara.android.verticalslidevar.VerticalSeekBar;
+
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -63,6 +65,7 @@ public class WfEditText extends EditText {
     public WfEditText(Context context) {
         super(context);
     }
+    
     
     public void init(Main parent) {
         this.parent = parent;
@@ -245,19 +248,13 @@ public class WfEditText extends EditText {
     
     
     
-//    
-//    @Override
-//    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-//        super.onScrollChanged(l, t, oldl, oldt);
-//        if (t - oldt > 2 &&
-//                !scrollAuto) {
-//            scrollAuto = true;
-//            scrollBy(0, 50);
-//        } else {
-//            scrollAuto = false;
-//        }
-//            
-//    }
+    
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        
+        parent.updateScroll(t);
+    }
     
 
     

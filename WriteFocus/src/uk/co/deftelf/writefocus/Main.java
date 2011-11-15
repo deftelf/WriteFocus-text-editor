@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import com.tokaracamara.android.verticalslidevar.VerticalSeekBar;
+import com.tokaracamara.android.verticalslidevar.VerticalSeekBar.OnSeekBarChangeListener;
+
 import android.animation.Animator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -19,6 +22,7 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.AbsSeekBar;
 import android.widget.Scroller;
 import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
@@ -36,12 +40,13 @@ public class Main extends Activity {
     private Handler helpHintHide;
     private Toast notFound;
     SearchView searchView;
-    
+    VerticalSeekBar scroller;
     
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
         setContentView(R.layout.main);
         
         text = (WfEditText) findViewById(R.id.text);
@@ -75,6 +80,28 @@ public class Main extends Activity {
         text.getLayoutParams().width = (int)Math.ceil(text.getPaint().measureText(MEASURE_TEXT));
         statsToast = Toast.makeText(this, "", Toast.LENGTH_LONG);
         text.suppressUndo = false;
+        
+        scroller = ((VerticalSeekBar)findViewById(R.id.scrollThumb));
+        scroller.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+            
+            @Override
+            public void onStopTrackingTouch(VerticalSeekBar seekBar) {
+            }
+            
+            @Override
+            public void onStartTrackingTouch(VerticalSeekBar seekBar) {
+            }
+            
+            @Override
+            public void onProgressChanged(VerticalSeekBar seekBar, int progress, boolean fromUser) {
+                float proportion = ((float)Math.abs(progress - 1000)) / 1000;
+                int line = (int) ((text.getLineCount() - (text.getHeight() / text.getLineHeight())) * proportion);
+                int y = (int) (text.getLineHeight() * line);
+                text.scrollTo(0, y);
+            }
+        });
+        
+        updateScroll(0);
     }
     
     @Override
@@ -192,6 +219,14 @@ public class Main extends Activity {
             }
         });
         helpHintHide.sendEmptyMessageDelayed(0, 5000);
+    }
+
+    public void updateScroll(int y) {
+        int line = y / text.getLineHeight();
+        float proportion = ((float)line) / text.getLineCount();
+        int progress = (int) Math.abs(1000 - (1000 * proportion));
+        Log.d("scroll", "" + progress);
+        //scroller.setProgress(progress);
     }
     
     
