@@ -133,8 +133,32 @@ public class WfEditText extends EditText {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.d("key", event.getAction() + " " + event.getKeyCode() + " " + event.getCharacters());
             
-        if (keyCode == KeyEvent.KEYCODE_CTRL_RIGHT)
+        if (keyCode == KeyEvent.KEYCODE_CTRL_RIGHT ||
+                keyCode == KeyEvent.KEYCODE_CTRL_LEFT)
             parent.showHelpHint();
+        
+        if (event.hasModifiers(KeyEvent.META_CTRL_ON)) {
+            if (keyCode == KeyEvent.KEYCODE_L) {
+                parent.showStats();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_C) {
+                copy();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_V) {
+                paste();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_X) {
+                cut();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_Z) {
+                undo();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_F) {
+                parent.searchView.setIconified(false);
+                parent.searchView.requestFocus();
+                return true;
+            }
+        }
         
         return super.onKeyDown(keyCode, event);
     }
@@ -153,32 +177,6 @@ public class WfEditText extends EditText {
             getText().removeSpan(findHighlightSpan);
         findHighlightSpan = new BackgroundColorSpan(Color.RED);
         getText().setSpan(findHighlightSpan, from, to, 0);
-    }
-    
-    @Override
-    public boolean onKeyShortcut(int keyCode, KeyEvent event) {
-        Log.d("keyshort", event.getAction() + " " + event.getKeyCode() + " " + event.getCharacters());
-        if (keyCode == KeyEvent.KEYCODE_L)
-            parent.showStats();
-        else if (keyCode == KeyEvent.KEYCODE_C) {
-            copy();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_V) {
-            paste();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_X) {
-            cut();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_Z) {
-            undo();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_F) {
-            parent.searchView.setIconified(false);
-            parent.searchView.requestFocus();
-            return true;
-        }
-        
-        return super.onKeyShortcut(keyCode, event);
     }
     
     
